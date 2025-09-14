@@ -1,1 +1,1 @@
-export { default } from './FormPage';
+export {default} from './FormPage';

@@ -1,6 +1,6 @@
 import { UseFormRegister, FieldErrors, FieldArrayWithId } from 'react-hook-form';
 import type { FormData } from '../../types/FormTypes';
-import styles from './Modal.module.css';
+import styles from '../../styles/Modal.module.css';
 
 interface CasualtiesModalProps {
   fields: FieldArrayWithId<FormData, "casualties", "id">[];
@@ -43,7 +43,7 @@ export default function CasualtiesModal({
                 </label>
                 <select 
                   className={styles.select}
-                  {...register(`casualties.${index}.severity` as const, { required: 'נדרש לבחור חומרת פציעה' })}
+                  {...register(`casualties.${index}.severity` as const)}
                 >
                   <option value="">בחר/י</option>
                   {injurySeverityOptions.map(option => (
@@ -68,11 +68,7 @@ export default function CasualtiesModal({
                   min="1"
                   max="100"
                   className={styles.input}
-                  {...register(`casualties.${index}.count` as const, { 
-                    required: 'נדרש להזין מספר נפגעים',
-                    min: { value: 1, message: 'מספר נפגעים חייב להיות לפחות 1' },
-                    max: { value: 100, message: 'מספר נפגעים לא יכול לעלות על 100' }
-                  })}
+                  {...register(`casualties.${index}.count` as const, { valueAsNumber: true })}
                 />
                 {errors.casualties?.[index]?.count && (
                   <span className={styles.error}>

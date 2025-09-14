@@ -1,6 +1,7 @@
 import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
-import { FormData } from '../../types/FormTypes';
-import styles from './FormBase.module.css';
+import type { FormData } from '../../types/FormTypes';
+import styles from '../../styles/FormBase.module.css';
+import { MAX_TEXT_LENGTH } from '../../constants/validationMessages';
 
 const locationOptions = ['בסיס', 'שטח אזרחי', 'שטח אש', 'רציף', 'אוויר'];
 const weatherOptions = ['בהיר', 'מעונן חלקית', 'מעונן', 'גשום', 'סוער', 'ערפל', 'שלג', 'חם', 'קר'];
@@ -10,7 +11,6 @@ interface LeftColumnProps {
   errors: FieldErrors<FormData>;
   watch: UseFormWatch<FormData>;
   setValue: UseFormSetValue<FormData>;
-  validationRules: any;
   getCharCounterClass: (length: number) => string;
 }
 
@@ -18,8 +18,6 @@ export default function LeftColumn({
   register,
   errors,
   watch,
-  setValue,
-  validationRules,
   getCharCounterClass
 }: LeftColumnProps) {
   const locationDescriptionValue = watch('locationDescription') || '';
@@ -45,12 +43,11 @@ export default function LeftColumn({
 
   return (
     <aside className={`${styles.column} ${styles.leftColumn}`} data-label="פרטי המיקום">
-      {/* מיקום */}
       <div className={styles.fieldBox}>
         <label className={styles.label}>מיקום *</label>
         <select 
           className={styles.select}
-          {...register('location', validationRules.location)}
+          {...register('location')}
         >
           <option value="">בחר מיקום</option>
           {locationOptions.map(option => (
@@ -60,22 +57,20 @@ export default function LeftColumn({
         {errors.location && <span className={styles.error}>{errors.location.message}</span>}
       </div>
 
-      {/* תיאור מיקום */}
       <div className={styles.fieldBox}>
         <label className={styles.label}>תיאור מיקום</label>
         <textarea
           className={styles.textarea}
           style={{ minHeight: '100px', maxHeight: '150px' }}
           placeholder="תיאור מפורט של המיקום..."
-          {...register('locationDescription', validationRules.locationDescription)}
+          {...register('locationDescription')}
         />
         <div className={`${styles.charCounter} ${styles[getCharCounterClass(locationDescriptionLength)]}`}>
-          {locationDescriptionLength}/800
+          {locationDescriptionLength}/{MAX_TEXT_LENGTH}
         </div>
         {errors.locationDescription && <span className={styles.error}>{errors.locationDescription.message}</span>}
       </div>
 
-      {/* מזג אוויר */}
       <div className={styles.fieldBox}>
         <label className={styles.label}>מזג אוויר</label>
         <select 
@@ -90,7 +85,6 @@ export default function LeftColumn({
         {errors.weather && <span className={styles.error}>{errors.weather.message}</span>}
       </div>
 
-      {/* נ.צ. - קואורדינטות */}
       <div className={styles.fieldBox}>
         <label className={styles.label}>נ.צ. (קואורדינטות)</label>
         <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
@@ -98,20 +92,19 @@ export default function LeftColumn({
             type="number"
             className={styles.input}
             placeholder="קו רוחב (Latitude)"
-            {...register('coordinates.latitude', validationRules.coordinates?.latitude)}
+            {...register('coordinates.latitude')}
           />
           <input
             type="number"
             className={styles.input}
             placeholder="קו אורך (Longitude)"
-            {...register('coordinates.longitude', validationRules.coordinates?.longitude)}
+            {...register('coordinates.longitude')}
           />
         </div>
         {errors.coordinates?.latitude && <span className={styles.error}>{errors.coordinates.latitude.message}</span>}
         {errors.coordinates?.longitude && <span className={styles.error}>{errors.coordinates.longitude.message}</span>}
       </div>
 
-      {/* נעיצת סיכה בגוגל מפות */}
       <div className={styles.fieldBox}>
         <label className={styles.label}>נעיצת סיכה במפה</label>
         <button
@@ -134,7 +127,6 @@ export default function LeftColumn({
         </p>
       </div>
 
-      {/* הצגת מיקום נ.צ. */}
       <div className={styles.fieldBox}>
         <label className={styles.label}>הצגת מיקום נ.צ.</label>
         <button

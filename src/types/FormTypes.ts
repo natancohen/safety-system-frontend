@@ -1,5 +1,6 @@
+
 export interface FormData {
-  name_of_unity: string;
+  unitName: string;
   date: string;
   text: string;
   unitActivityType: string;
@@ -8,27 +9,26 @@ export interface FormData {
   eventSeverity: string;
   eventOutcome: string;
   damageType: string;
-  categorySubOptions: string;
-  subCategoryOptions: string;
   location: string;
-  locationDescription: string;
-  weather: string;
+  locationDescription?: string;
+  weather?: string;
   coordinates: {
-    latitude: string;
-    longitude: string;
+    latitude?: string;
+    longitude?: string;
   };
-  recommendations: string;
   casualties: Array<{
     severity: string;
     count: number;
   }>;
+  subSubCategoryOptions?: string;
+  recommendations?: string;
+  costAmount?: number;
+  categorySubOptions: string;
+  subCategoryOptions: string;
 }
 
-export interface FormErrors {
-  [key: string]: string;
+export interface Casualty {
+  severity: string;
+  count: number;
 }
 
-export interface SelectOption {
-  value: string;
-  label: string;
-}

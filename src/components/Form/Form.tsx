@@ -1,7 +1,7 @@
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useState } from 'react';
-import type { FormData } from '../../types/FormTypes';
-import { useFormValidation } from '../../hooks/useFormValidation';
+import { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { formSchema, FormData } from '../../utils/validationSchema';
 import {
   unitOptions,
   unitActivityOptions,
@@ -16,7 +16,8 @@ import RightColumn from './RightColumn';
 import MiddleColumn from './MiddleColumn';
 import LeftColumn from './LeftColumn';
 import CasualtiesModal from './CasualtiesModal';
-import styles from './FormBase.module.css';
+import styles from '../../styles/FormBase.module.css';
+import responsiveStyles from '../../styles/Responsive.module.css';
 
 export default function Form() {
   const {
@@ -27,8 +28,9 @@ export default function Form() {
     control,
     formState: { errors, isSubmitting }
   } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      name_of_unity: '',
+      unitName: '',
       date: '',
       text: '',
       unitActivityType: '',
@@ -44,7 +46,12 @@ export default function Form() {
         latitude: '',
         longitude: ''
       },
-      casualties: []
+      casualties: [],
+      subSubCategoryOptions: '',
+      recommendations: '',
+      costAmount: undefined,
+      categorySubOptions: '',
+      subCategoryOptions: ''
     }
   });
 
@@ -56,42 +63,43 @@ export default function Form() {
   const [showCasualtiesModal, setShowCasualtiesModal] = useState(false);
   const eventOutcome = watch('eventOutcome');
 
-  const { validationRules, getCharCounterClass } = useFormValidation();
-  
   const textValue = watch('text') || '';
   const textLength = textValue.length;
+  const getCharCounterClass = (length: number) => {
+    if (length > 750) return 'danger';
+    if (length > 600) return 'warning';
+    return 'normal';
+  };
 
   const addCasualty = () => {
     append({ severity: '', count: 1 });
   };
 
+
   const onSubmit = async (data: FormData) => {
     try {
-      console.log('Submitted:', data);
       await new Promise(resolve => setTimeout(resolve, 1000));
       alert(`שלחת את הנתונים בהצלחה:\n${JSON.stringify(data, null, 2)}`);
     } catch (error) {
-      console.error('Error submitting form:', error);
       alert('אירעה שגיאה בשליחת הטופס');
     }
   };
 
   return (
-    <main className={styles.formWrapper}>
+    <main className={`${styles.formWrapper} ${responsiveStyles.formWrapper}`}>
       <header className={styles.header}>
         <h1 className={styles.title}>הוספת אירוע</h1>
       </header>
       <div className={styles.borderOfForm}>
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-          <section className={styles.formGrid}>
+          <section className={`${styles.formGrid} ${responsiveStyles.formGrid}`}>
             <RightColumn
               register={register}
               watch={watch}
               setValue={setValue}
               errors={errors}
-              validationRules={validationRules}
-              getCharCounterClass={getCharCounterClass}
               textLength={textLength}
+              getCharCounterClass={getCharCounterClass}
               unitOptions={unitOptions}
               unitActivityOptions={unitActivityOptions}
               activityOptions={activityOptions}
@@ -102,7 +110,6 @@ export default function Form() {
               watch={watch}
               setValue={setValue}
               errors={errors}
-              validationRules={validationRules}
               eventSeverityOptions={eventSeverityOptions}
               eventOutcomeOptions={eventOutcomeOptions}
               damageSeverityOptions={damageSeverityOptions}
@@ -116,7 +123,6 @@ export default function Form() {
               watch={watch}
               setValue={setValue}
               errors={errors}
-              validationRules={validationRules}
               getCharCounterClass={getCharCounterClass}
             />
             <button 
@@ -127,7 +133,7 @@ export default function Form() {
               {isSubmitting ? 'שולח...' : 'שלח נתונים'}
             </button>
           </section>
-        </form>
+        </form>  
       </div>
       {showCasualtiesModal && (
         <CasualtiesModal
@@ -142,4 +148,6 @@ export default function Form() {
       )}
     </main>
   );
-}
+ }
+
+ 
