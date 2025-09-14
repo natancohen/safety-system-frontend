@@ -1,5 +1,5 @@
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { formSchema, FormData } from '../../utils/validationSchema';
 import {
@@ -18,7 +18,6 @@ import LeftColumn from './LeftColumn';
 import CasualtiesModal from './CasualtiesModal';
 import styles from '../../styles/FormBase.module.css';
 import responsiveStyles from '../../styles/Responsive.module.css';
-import { MAX_TEXT_LENGTH } from '../../constants/validationMessages';
 
 export default function Form() {
   const {
@@ -75,6 +74,7 @@ export default function Form() {
   const addCasualty = () => {
     append({ severity: '', count: 1 });
   };
+
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -133,7 +133,7 @@ export default function Form() {
               {isSubmitting ? 'שולח...' : 'שלח נתונים'}
             </button>
           </section>
-        </form>
+        </form>  
       </div>
       {showCasualtiesModal && (
         <CasualtiesModal
@@ -148,4 +148,6 @@ export default function Form() {
       )}
     </main>
   );
-}
+ }
+
+ 

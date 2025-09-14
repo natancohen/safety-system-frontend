@@ -43,7 +43,6 @@
   }
 }
 
-/* שיפור RTL למסכים קטנים */
 @media (max-width: 480px) {
   .column {
     padding: 0.25rem;

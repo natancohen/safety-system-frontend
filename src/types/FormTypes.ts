@@ -1,3 +1,4 @@
+
 export interface FormData {
   unitName: string;
   date: string;
@@ -30,3 +31,4 @@ export interface Casualty {
   severity: string;
   count: number;
 }
+

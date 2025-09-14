@@ -193,3 +193,13 @@
   font-family: inherit;
   direction: ltr;
 }
+
+
+.body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.body.dark-mode a {
+    color: #90caf9;
+}

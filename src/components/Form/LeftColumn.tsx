@@ -18,7 +18,6 @@ export default function LeftColumn({
   register,
   errors,
   watch,
-  setValue,
   getCharCounterClass
 }: LeftColumnProps) {
   const locationDescriptionValue = watch('locationDescription') || '';

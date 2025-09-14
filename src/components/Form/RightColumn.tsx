@@ -20,7 +20,6 @@ interface RightColumnProps {
 
 export default function RightColumn({
   register,
-  watch,
   setValue,
   errors,
   textLength,

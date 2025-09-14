@@ -39,7 +39,6 @@ export default function MiddleColumn({
   const selectedCategory = watch('category');
   const selectedSubCategory = watch('categorySubOptions');
   const selectedSubCategoryOptions = watch('subCategoryOptions');
-  const selectedSubSubCategoryOptions = watch('subSubCategoryOptions');
   const recommendationsValue = watch('recommendations') || '';
   const recommendationsLength = recommendationsValue.length;
 
