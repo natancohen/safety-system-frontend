@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const formSchema = z.object({
   unitName: z.string().min(1, 'יש לבחור יחידת משנה'),
   date: z.string().min(1, 'יש להזין תאריך'),
+  time: z.string().optional(),
   text: z.string().min(1, 'יש להזין תיאור מפורט').max(800, 'התיאור ארוך מדי'),
   unitActivityType: z.string().min(1, 'יש לבחור מאפיין פעילות יחידה'),
   activityType: z.string().min(1, 'יש לבחור מאפיין פעילות פרט'),

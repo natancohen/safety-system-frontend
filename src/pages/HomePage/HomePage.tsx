@@ -14,10 +14,14 @@ export default function HomePage() {
           <Link to="/form" className={styles.navButton}>
             כניסה לטופס הזנת נתונים
           </Link>
+          <Link to="/events" className={styles.navButton}>
+            צפייה וניהול אירועי בטיחות
+          </Link>
         </nav>
         <aside className={styles.infoSection}>
           <h2>מידע כללי</h2>
           <p>מערכת זו מיועדת להזנת דוחות בטיחות ופרטי אירוע.</p>
+          <p>ניתן להזין אירועים חדשים או לנהל את סטטוס האירועים שהוזנו במערכת.</p>
         </aside>
       </section>
     </main>
