@@ -40,6 +40,10 @@ export const injurySeverityOptions = [
   "קל", "בינוני", "חמור", "קטלני"
 ];
 
+export const locationOptions = ['בסיס', 'שטח אזרחי', 'שטח אש', 'רציף', 'אוויר'];
+
+export const weatherOptions = ['שרב/עומס חום', 'שלג', 'סופת חול', 'גשם', 'ערפל', 'התקרחות', 'ברד', 'מעונן', 'נאה', 'רוח', 'ים סוער', 'מים שקטים'];
+
 export const categorySubOptions = {
   "דרכים": {
     subCategories: [

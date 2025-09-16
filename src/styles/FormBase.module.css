@@ -1,42 +1,55 @@
 :root {
-  --border-radius: 6px;
-  --shadow-small: 0 1px 4px rgba(0, 0, 0, 0.1);
-  --shadow-medium: 0 2px 6px rgba(0, 0, 0, 0.15);
-  --transition: transform 0.2s, box-shadow 0.2s;
-  --primary-color: #007bff;
-  --primary-hover: #0056b3;
+  --border-radius: 8px;
+  --shadow-small: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --transition: all 0.2s ease;
   --error-color: #f44336;
   --warning-color: #ff9800;
   --normal-color: #666;
-  --input-bg: #fafafa;
-  --input-bg-focus: #fff;
-  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  --max-height: 150px; 
+  --primary-color: #007bff;
+  --primary-hover: #0056b3;
+  --text-color: #333;
+  --input-background: #fff;
+  --input-bg-focus: #f7f7f7;
+  --border-color: #ddd;
+  --card-background: #fff;
 }
 
 .formWrapper {
-  max-width: 1000px;
-  margin: 1rem auto; 
-  padding: 0.5rem;
-  border: 2px solid #ccc;
-  border-radius: var(--border-radius);
-  background-color: #f9f9f9;
-  font-family: var(--font-family);
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 80vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .header {
-  text-align: center;
-  margin-bottom: 0.3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+  height: 2.5rem;
+}
+
+.header button {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  height: 2rem;
 }
 
 .title {
-  color: #333;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--primary-color);
   margin: 0;
 }
 
@@ -44,32 +57,39 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: calc(100vh - 3rem);
+  overflow: hidden;
 }
 
 .formGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 0.8fr 0.9fr 1fr;
   grid-template-areas:
-    "rightColumn middleColumn leftColumn"
-    "submitButton submitButton submitButton";
+    "rightColumn middleColumn fourthColumn leftColumn"
+    "submitButton submitButton submitButton submitButton";
+  grid-template-rows: 1fr auto;
   gap: 0.5rem;
   align-items: stretch;
-  padding: 1ch;
-  margin: auto;
-  min-height: 60vh;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
 }
 
 .column {
+  background: var(--card-background);
+  padding: 0.6rem 0.6rem 0.2rem; /* UPDATED: צמצום padding תחתון מ-0.6rem ל-0.2rem */
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-medium);
+  height: 100%;
+  overflow-y: auto;
+  transition: var(--transition);
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  background: linear-gradient(135deg, #f0f4f8 0%, #f8f9fa 100%);
-  border-radius: var(--border-radius);
-  padding: 0.5rem;
-  position: relative;
-  box-shadow: var(--shadow-small);
-  height: fit-content;
-  min-height: 300px;
+  max-height: calc(100vh - 5.5rem);
 }
 
 .rightColumn {
@@ -80,65 +100,104 @@
   grid-area: middleColumn;
 }
 
+.middleColumn .fieldBox {
+  margin-bottom: 0.4rem;
+}
+
 .leftColumn {
   grid-area: leftColumn;
+}
+
+.fourthColumn {
+  grid-area: fourthColumn;
 }
 
 .fieldBox {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.15rem;
+  margin-bottom: 0.4rem;
+  flex-shrink: 0;
 }
 
 .label {
-  font-size: 0.85rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 0.1rem;
+  line-height: 1.1;
 }
 
 .select, .input {
   padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  background-color: var(--input-bg);
-  font-family: var(--font-family);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: var(--input-background);
+  color: var(--text-color);
+  font-family: inherit;
   direction: rtl;
+  transition: var(--transition);
+  height: 2.2rem;
+  min-height: 2.2rem;
 }
 
 .select:focus, .input:focus {
   outline: none;
   border-color: var(--primary-color);
-  background-color: var(--input-bg-focus);
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.textarea {
+  resize: none;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  background: var(--input-background);
+  color: var(--text-color);
+  font-family: inherit;
+  direction: rtl;
+  transition: var(--transition);
+  line-height: 1.3;
 }
 
 .textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  background-color: var(--input-bg-focus);
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 1px var(--primary-color);
 }
 
-.textarea {
-  resize: vertical;
-  min-height: 80px;
-  max-height: var(--max-height);
+/* שדות טקסט ספציפיים לכל עמודה */
+.rightColumn .textarea {
+  min-height: 3.5rem;
+  max-height: 4.5rem;
+}
+
+.fourthColumn .textarea {
+  min-height: 2.5rem;
+  max-height: 3.5rem;
+}
+
+.leftColumn .textarea {
+  min-height: 1.8rem;
+  max-height: 2.5rem;
 }
 
 .error {
   color: var(--error-color);
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  margin-top: 0.1rem;
   font-weight: 500;
+  line-height: 1.2;
 }
 
 .charCounter {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   text-align: left;
-  margin-top: 0.25rem;
+  margin-top: 0.1rem;
   font-weight: 500;
+  line-height: 1;
 }
 
 .charCounter.normal {
@@ -155,24 +214,27 @@
 
 .submitButton {
   grid-area: submitButton;
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
   padding: 0.5rem 1.2rem;
   border: none;
-  border-radius: 4px;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+  border-radius: 6px;
+  background: var(--primary-color);
   color: white;
   font-size: 0.85rem;
-  font-weight: bold;
-  font-family: var(--font-family);
+  font-weight: 500;
+  font-family: inherit;
   cursor: pointer;
   transition: var(--transition);
   justify-self: center;
-  min-width: 130px;
+  min-width: 120px;
+  box-shadow: var(--shadow-medium);
+  height: 2.2rem;
+  flex-shrink: 0;
 }
 
 .submitButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  background: var(--primary-hover);
+  transform: translateY(-1px);
 }
 
 .submitButton:disabled {
@@ -181,12 +243,10 @@
 }
 
 .borderOfForm {
-  border: 2px solid #e7dbdb;
-  border-radius: 8px;
-  border-style: ridge;
-  padding: 0.5rem;
   display: flex; 
   flex-direction: column;
+  flex: 1;
+  height: 100%;
 }
 
 .dateInput {
@@ -194,12 +254,142 @@
   direction: ltr;
 }
 
-
-.body.dark-mode {
-    background-color: #121212;
-    color: #e0e0e0;
+/* התאמות לאזורי זמן וקואורדינטות */
+.leftColumn .fieldBox:has(input[type="number"]) div {
+  display: flex;
+  gap: 0.3rem;
 }
 
-.body.dark-mode a {
-    color: #90caf9;
+.leftColumn .fieldBox:has(input[type="number"]) input {
+  flex: 1;
+  font-size: 0.75rem;
+}
+
+/* Responsive design */
+@media (max-width: 1400px) {
+  .formGrid {
+    grid-template-columns: 1fr 0.75fr 0.85fr 1fr;
+  }
+  
+  .label {
+    font-size: 0.75rem;
+  }
+  
+  .select, .input {
+    font-size: 0.8rem;
+    padding: 0.45rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .formGrid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "rightColumn middleColumn"
+      "fourthColumn leftColumn"
+      "submitButton submitButton";
+    grid-template-rows: 1fr 1fr auto;
+  }
+  
+  .formWrapper {
+    height: 100vh;
+  }
+  
+  .column {
+    max-height: calc(50vh - 4rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "rightColumn"
+      "middleColumn"
+      "fourthColumn" 
+      "leftColumn"
+      "submitButton";
+    grid-template-rows: auto auto auto auto auto;
+  }
+  
+  .formWrapper {
+    height: auto;
+    overflow: visible;
+  }
+  
+  .form {
+    height: auto;
+    overflow: visible;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .title {
+    font-size: 1.3rem;
+  }
+  
+  .column {
+    padding: 0.6rem 0.6rem 0.2rem; /* UPDATED: צמצום padding תחתון מ-0.6rem ל-0.2rem */
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+  
+  .fieldBox {
+    margin-bottom: 0.4rem;
+  }
+  
+  .rightColumn .textarea {
+    min-height: 3rem;
+    max-height: 4rem;
+  }
+  
+  .fourthColumn .textarea {
+    min-height: 2.5rem;
+    max-height: 3.5rem;
+  }
+  
+  .leftColumn .textarea {
+    min-height: 2rem;
+    max-height: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .column {
+    padding: 0.4rem 0.4rem 0.1rem; /* UPDATED: צמצום padding תחתון מ-0.4rem ל-0.1rem */
+  }
+
+  .label {
+    font-size: 0.7rem;
+  }
+
+  .select, .input, .textarea {
+    font-size: 0.75rem;
+    padding: 0.4rem;
+  }
+  
+  .select, .input {
+    height: 2rem;
+    min-height: 2rem;
+  }
+}
+
+body.dark-mode .column {
+  background: #374151;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  border-color: #4b5563;
+}
+
+body.dark-mode .select, 
+body.dark-mode .input {
+  border-color: #4b5563;
+}
+
+body.dark-mode .textarea {
+  border-color: #4b5563;
 }

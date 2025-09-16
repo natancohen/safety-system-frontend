@@ -2,7 +2,7 @@ import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'rea
 import type { FormData } from '../../types/FormTypes';
 import styles from '../../styles/FormBase.module.css';
 import { handleCategoryChange } from '../../utils/formHandlers';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { MAX_TEXT_LENGTH } from '../../constants/validationMessages';
 
 interface RightColumnProps {
@@ -20,6 +20,7 @@ interface RightColumnProps {
 
 export default function RightColumn({
   register,
+  watch,
   setValue,
   errors,
   textLength,
@@ -30,9 +31,17 @@ export default function RightColumn({
   categoryOptions
 }: RightColumnProps) {
   const dateInputRef = useRef<HTMLInputElement>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const selectedDate = watch('date');
 
   const preventKeyboardInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     e.preventDefault();
+  };
+
+  const handleDateClick = () => {
+    if (dateInputRef.current) {
+      dateInputRef.current.showPicker();
+    }
   };
 
   return (
@@ -53,14 +62,46 @@ export default function RightColumn({
 
       <div className={styles.fieldBox}>
         <label className={styles.label}>תאריך *</label>
-        <input
-          type="date"
-          className={`${styles.input} ${styles.dateInput}`}
-          ref={dateInputRef}
-          onKeyDown={preventKeyboardInput}
-          {...register('date')}
-        />
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <input
+            type="date"
+            className={`${styles.input} ${styles.dateInput}`}
+            ref={dateInputRef}
+            onKeyDown={preventKeyboardInput}
+            {...register('date')}
+            style={{
+              color: selectedDate ? 'var(--text-color)' : '#999',
+              cursor: 'pointer',
+              flex: 1
+            }}
+          />
+          <input
+            type="time"
+            className={`${styles.input} ${styles.dateInput}`}
+            {...register('time')}
+            style={{
+              color: 'var(--text-color)',
+              cursor: 'pointer',
+              flex: 1
+            }}
+          />
+        </div>
         {errors.date && <span className={styles.error}>{errors.date.message}</span>}
+        {errors.time && <span className={styles.error}>{errors.time.message}</span>}
+      </div>
+
+      <div className={styles.fieldBox} style={{ minHeight: '110px' }}>
+        <label className={styles.label}>תיאור מפורט *</label>
+        <textarea
+          className={styles.textarea}
+          style={{ minHeight: '90px', maxHeight: '110px' }}
+          placeholder="תיאור מפורט של האירוע..."
+          {...register('text')}
+        />
+        <div className={`${styles.charCounter} ${styles[getCharCounterClass(textLength)]}`}>
+          {textLength}/{MAX_TEXT_LENGTH}
+        </div>
+        {errors.text && <span className={styles.error}>{errors.text.message}</span>}
       </div>
 
       <div className={styles.fieldBox}>
@@ -104,20 +145,6 @@ export default function RightColumn({
           ))}
         </select>
         {errors.category && <span className={styles.error}>{errors.category.message}</span>}
-      </div>
-
-      <div className={styles.fieldBox} style={{ minHeight: '120px' }}>
-        <label className={styles.label}>תיאור מפורט *</label>
-        <textarea
-          className={styles.textarea}
-          style={{ minHeight: '175px', maxHeight: '150px' }}
-          placeholder="תיאור מפורט של האירוע..."
-          {...register('text')}
-        />
-        <div className={`${styles.charCounter} ${styles[getCharCounterClass(textLength)]}`}>
-          {textLength}/{MAX_TEXT_LENGTH}
-        </div>
-        {errors.text && <span className={styles.error}>{errors.text.message}</span>}
       </div>
     </aside>
   );

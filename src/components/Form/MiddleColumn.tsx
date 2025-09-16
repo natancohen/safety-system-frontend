@@ -126,22 +126,26 @@ export default function MiddleColumn({
         )}
       </div>
 
-      {selectedCategory === 'אש' && selectedSubCategory === 'מאפיין אש' && ['חשמל', 'מע\' רכב'].includes(selectedSubCategoryOptions as string) && (
-        <div className={styles.fieldBox}>
-          <label className={styles.label}>תת-קטגוריה משנית *</label>
-          <select 
-            className={styles.select}
-            {...register('subSubCategoryOptions')}
-            onChange={(e) => handleSubSubCategoryOptionsChange(setValue, e.target.value)}
-          >
-            <option value="">בחר תת-קטגוריה משנית</option>
-            {getSubSubCategoryOptions().map(option => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
-          {errors.subSubCategoryOptions && <span className={styles.error}>{errors.subSubCategoryOptions.message}</span>}
-        </div>
-      )}
+      <div className={styles.fieldBox}>
+        <label className={styles.label}>תת-קטגוריה משנית</label>
+        <select 
+          className={styles.select}
+          {...register('subSubCategoryOptions')}
+          onChange={(e) => handleSubSubCategoryOptionsChange(setValue, e.target.value)}
+          disabled={!(selectedCategory === 'אש' && selectedSubCategory === 'מאפיין אש' && ['חשמל', 'מע\' רכב'].includes(selectedSubCategoryOptions as string))}
+        >
+          <option value="">בחר תת-קטגוריה משנית</option>
+          {getSubSubCategoryOptions().map(option => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
+        {errors.subSubCategoryOptions && <span className={styles.error}>{errors.subSubCategoryOptions.message}</span>}
+        {!(selectedCategory === 'אש' && selectedSubCategory === 'מאפיין אש' && ['חשמל', 'מע\' רכב'].includes(selectedSubCategoryOptions as string)) && (
+          <p style={{ fontSize: '0.7rem', color: '#666', margin: '0.3rem 0 0 0' }}>
+            זמין רק עבור קטגוריית אש → מאפיין אש → חשמל/מע' רכב
+          </p>
+        )}
+      </div>
 
       <div className={styles.fieldBox}>
         <label className={styles.label}>חומרת אירוע *</label>
@@ -149,6 +153,7 @@ export default function MiddleColumn({
           className={styles.select}
           {...register('eventSeverity')}
         >
+          <option value="">בחר/י</option>
           {eventSeverityOptions.map(option => (
             <option key={option} value={option}>{option}</option>
           ))}
@@ -182,20 +187,6 @@ export default function MiddleColumn({
           ))}
         </select>
         {errors.damageType && <span className={styles.error}>{errors.damageType.message}</span>}
-      </div>
-
-      <div className={styles.fieldBox} style={{ minHeight: '120px' }}>
-        <label className={styles.label}>המלצות ראשוניות</label>
-        <textarea
-          className={styles.textarea}
-          style={{ minHeight: '80px', maxHeight: '150px' }}
-          placeholder="המלצות ראשוניות לטיפול באירוע..."
-          {...register('recommendations')}
-        />
-        <div className={`${styles.charCounter} ${styles[getCharCounterClass(recommendationsLength)]}`}>
-          {recommendationsLength}/{MAX_TEXT_LENGTH}
-        </div>
-        {errors.recommendations && <span className={styles.error}>{errors.recommendations.message}</span>}
       </div>
 
       <div className={styles.fieldBox}>

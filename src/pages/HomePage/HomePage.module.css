@@ -10,6 +10,12 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
   overflow-y: auto;
+  transition: background 0.3s ease;
+}
+
+/* Dark mode background */
+body.dark-mode .pageContainer {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
 }
 
 .header {
@@ -33,14 +39,15 @@
 }
 
 .content {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--card-background);
   border-radius: 16px;
   padding: 2.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); 
+  box-shadow: var(--shadow);
   max-width: 700px; 
   width: 100%;
   margin: 0 auto; 
   animation: fadeInUp 0.5s ease-out;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 @keyframes fadeInUp {
@@ -65,7 +72,7 @@
 .navButton {
   display: inline-block;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
   color: white;
   text-decoration: none;
   border-radius: 10px;
@@ -78,31 +85,32 @@
 .navButton:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
-  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+  background: linear-gradient(135deg, var(--primary-hover) 0%, #004085 100%);
 }
 
 .infoSection {
-  background: #f8f9fa;
+  background: var(--input-bg);
   padding: 1.5rem;
   border-radius: 10px;
-  border-left: 4px solid #007bff; 
+  border-left: 4px solid var(--primary-color);
   margin-top: 1.5rem;
+  transition: background-color 0.3s ease;
 }
 
 .infoSection h2 {
-  color: #333;
+  color: var(--text-color);
   margin-bottom: 1rem;
   font-size: 1.2rem;
   font-weight: 600;
 }
 
 .infoSection p {
-  color: #555;
+  color: var(--text-color);
   line-height: 1.7;
   margin-bottom: 0.5rem;
   font-size: 1rem;
+  opacity: 0.8;
 }
-
 
 @media (max-width: 768px) {
   .pageContainer {
