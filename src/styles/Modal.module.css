@@ -12,90 +12,107 @@
 }
 
 .modalContent {
-  background-color: #fff;
-  padding: 1.5rem;
+  background-color: var(--card-background);
+  color: var(--text-color);
+  padding: 1.2rem;
   border-radius: 8px;
-  max-width: 600px;
+  max-width: 500px;
   width: 90%;
-  max-height: 80vh;
+  max-height: 70vh;
   overflow: auto;
   direction: rtl;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .modalHeader {
   text-align: center;
-  margin-bottom: 1rem;
-  color: #333;
-  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+  color: var(--text-color);
+  font-size: 1rem;
   font-weight: bold;
 }
 
 .emptyState {
   text-align: center;
-  color: #666;
+  color: var(--text-secondary);
   font-style: italic;
-  margin: 1rem 0;
-  padding: 1rem;
-  border: 1px dashed #ccc;
+  margin: 0.8rem 0;
+  padding: 0.8rem;
+  border: 1px dashed var(--border-color);
   border-radius: 4px;
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 
 .casualtyItem {
-  border: 1px solid #ddd;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
   border-radius: 6px;
-  background-color: #f9f9f9;
+  background-color: var(--input-bg);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .casualtyGrid {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
-  gap: 1rem;
+  gap: 0.8rem;
   align-items: end;
 }
 
 .casualtyField {
   display: flex;
   flex-direction: column;
+  gap: 0.3rem;
 }
 
 .casualtyLabel {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: bold;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem;
+  color: var(--text-color);
 }
 
 .select, .input {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
+  padding: 0.4rem;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
-  font-size: 0.9rem;
-  background-color: #fafafa;
-  direction: rtl; /* תמיכה RTL */
+  font-size: 0.8rem;
+  background-color: var(--input-background);
+  color: var(--text-color);
+  direction: rtl;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  height: 2rem;
+}
+
+.select:focus, .input:focus {
+  outline: none;
+  border-color: var(--primary-color);
 }
 
 .error {
-  color: #f44336;
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+  color: var(--error-color);
+  font-size: 0.7rem;
+  margin-top: 0.2rem;
 }
 
 .removeButton {
-  background-color: #f44336;
+  background-color: var(--danger-color);
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 0.5rem 0.8rem;
-  font-size: 0.8rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.2s;
+  height: 2rem;
+  align-self: end;
 }
 
 .removeButton:hover {
-  background-color: #d32f2f;
+  background-color: var(--danger-hover);
 }
 
 .addButton {
@@ -103,8 +120,8 @@
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 0.6rem 1.2rem;
-  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.2s;
@@ -115,41 +132,97 @@
 }
 
 .closeButton {
-  background-color: #007bff;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 0.6rem 1.2rem;
-  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.2s;
 }
 
 .closeButton:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-hover);
 }
 
 .modalButtons {
   display: flex;
   justify-content: space-between;
-  margin-top: 1.5rem;
-  gap: 1rem;
+  margin-top: 1rem;
+  gap: 0.8rem;
+}
+
+/* Dark mode support */
+body.dark-mode .modalContent {
+  background-color: #374151;
+  border: 1px solid #4b5563;
+}
+
+body.dark-mode .casualtyItem {
+  background-color: #4b5563;
+  border-color: #6b7280;
+}
+
+body.dark-mode .emptyState {
+  border-color: #6b7280;
 }
 
 @media (max-width: 768px) {
   .casualtyGrid {
     grid-template-columns: 1fr;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
   
   .modalContent {
     width: 95%;
-    padding: 1rem;
+    padding: 0.8rem;
+    max-height: 80vh;
   }
   
   .modalButtons {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
+  }
+  
+  .casualtyLabel {
+    font-size: 0.7rem;
+  }
+  
+  .select, .input {
+    font-size: 0.75rem;
+    height: 1.8rem;
+  }
+  
+  .removeButton {
+    font-size: 0.7rem;
+    height: 1.8rem;
+    margin-top: 0.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modalContent {
+    padding: 0.6rem;
+  }
+  
+  .casualtyItem {
+    padding: 0.6rem;
+  }
+  
+  .modalHeader {
+    font-size: 0.9rem;
+  }
+  
+  .select, .input {
+    font-size: 0.7rem;
+    padding: 0.3rem;
+    height: 1.7rem;
+  }
+  
+  .addButton, .closeButton {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
   }
 }
