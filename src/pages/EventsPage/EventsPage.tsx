@@ -1,27 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './EventsPage.module.css';
-
-interface Event {
-  id: string;
-  unitName: string;
-  date: string;
-  category: string;
-  eventSeverity: string;
-  eventOutcome: string;
-  location: string;
-  text: string;
-  coordinates: {
-    latitude: string;
-    longitude: string;
-  };
-  casualties: Array<{
-    severity: string;
-    count: number;
-  }>;
-  createdAt: string;
-  status: 'בטיפול' | 'טופל';
-}
+import { getEvents, updateEvent, deleteEvent, Event } from '../../utils/api';
 
 interface FilterState {
   eventNumber: string;
@@ -32,9 +12,14 @@ interface FilterState {
   unitName: string;
 }
 
+const formatCasualties = (casualties?: Event['casualties']) => {
+  if (!casualties || casualties.length === 0) return '-';
+  return casualties.map(c => `${c.severity} (${c.count})`).join(', ');
+};
+
 export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
-  const [activeTab, setActiveTab] = useState<'בטיפול' | 'טופל'>('בטיפול');
+  const [activeTab, setActiveTab] = useState<string>('בטיפול');
   const [filters, setFilters] = useState<FilterState>({
     eventNumber: '',
     dateFrom: '',
@@ -44,27 +29,38 @@ export default function EventsPage() {
     unitName: ''
   });
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadEvents = async () => {
+    try {
+      setLoading(true);
+      const data = await getEvents();
+      setEvents(data);
+      setFilteredEvents(data);
+    } catch (error) {
+      console.error('שגיאה בטעינת אירועים:', error);
+      alert('שגיאה בטעינת האירועים מהשרת');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Load events from localStorage
-    const savedEvents = localStorage.getItem('safetyEvents');
-    if (savedEvents) {
-      const parsedEvents = JSON.parse(savedEvents).map((event: any) => ({
-        ...event,
-        status: event.status || 'בטיפול' // Default status if not set
-      }));
-      setEvents(parsedEvents);
-      setFilteredEvents(parsedEvents);
-    }
+    loadEvents();
   }, []);
 
-  const handleStatusChange = (eventId: string, newStatus: 'בטיפול' | 'טופל') => {
-    const updatedEvents = events.map(event => 
-      event.id === eventId ? { ...event, status: newStatus } : event
-    );
-    setEvents(updatedEvents);
-    setFilteredEvents(updatedEvents);
-    localStorage.setItem('safetyEvents', JSON.stringify(updatedEvents));
+  const handleStatusChange = async (eventId: number, newStatus: string) => {
+    try {
+      await updateEvent(eventId, { status: newStatus });
+      const updatedEvents = events.map(event => 
+        event.id === eventId ? { ...event, status: newStatus } : event
+      );
+      setEvents(updatedEvents);
+      setFilteredEvents(updatedEvents);
+    } catch (error) {
+      console.error('שגיאה בעדכון סטטוס:', error);
+      alert('שגיאה בעדכון הסטטוס');
+    }
   };
 
   const handleFilterChange = (field: keyof FilterState, value: string) => {
@@ -75,8 +71,8 @@ export default function EventsPage() {
     let filtered = events;
 
     if (filters.eventNumber) {
-      const eventIndex = parseInt(filters.eventNumber) - 1;
-      filtered = filtered.filter((_, index) => index === eventIndex);
+      const eventId = parseInt(filters.eventNumber);
+      filtered = filtered.filter(event => event.id === eventId);
     }
 
     if (filters.dateFrom) {
@@ -120,16 +116,34 @@ export default function EventsPage() {
     setFilteredEvents(events);
   };
 
-  const handleDeleteEvent = (id: string) => {
-    const updatedEvents = events.filter(event => event.id !== id);
-    setEvents(updatedEvents);
-    setFilteredEvents(updatedEvents);
-    localStorage.setItem('safetyEvents', JSON.stringify(updatedEvents));
+  const handleDeleteEvent = async (id: number) => {
+    if (!confirm('האם אתה בטוח שברצונך למחוק את האירוע?')) return;
+    
+    try {
+      await deleteEvent(id);
+      const updatedEvents = events.filter(event => event.id !== id);
+      setEvents(updatedEvents);
+      setFilteredEvents(updatedEvents);
+      alert('האירוע נמחק בהצלחה');
+    } catch (error) {
+      console.error('שגיאה במחיקת אירוע:', error);
+      alert('שגיאה במחיקת האירוע');
+    }
   };
 
   const getEventsForTab = () => {
     return filteredEvents.filter(event => event.status === activeTab);
   };
+
+  if (loading) {
+    return (
+      <main className={styles.pageContainer} dir="rtl">
+        <p style={{ textAlign: 'center', fontSize: '1.5rem', marginTop: '2rem' }}>
+          טוען אירועים...
+        </p>
+      </main>
+    );
+  }
 
   return (
     <main className={styles.pageContainer} dir="rtl">
@@ -140,7 +154,6 @@ export default function EventsPage() {
         </Link>
       </header>
 
-      {/* Filter Section */}
       <section className={styles.filterSection}>
         <div className={styles.filterGrid}>
           <div className={styles.filterItem}>
@@ -217,7 +230,6 @@ export default function EventsPage() {
         </div>
       </section>
 
-      {/* Tabs */}
       <section className={styles.tabsSection}>
         <div className={styles.tabs}>
           <button
@@ -235,8 +247,8 @@ export default function EventsPage() {
         </div>
       </section>
 
-      {/* Events Table */}
       <section className={styles.content}>
+        <p>מספר אירועים מסוננים: {filteredEvents.length}</p>
         {getEventsForTab().length === 0 ? (
           <div className={styles.emptyState}>
             <p>אין אירועים להצגה בקטגוריה "{activeTab}"</p>
@@ -249,38 +261,67 @@ export default function EventsPage() {
                   <th>מספר אירוע</th>
                   <th>יחידה</th>
                   <th>תאריך</th>
+                  <th>שעה</th>
+                  <th>מאפיין פעילות יחידה</th>
+                  <th>מאפיין פעילות פרט</th>
                   <th>קטגוריה</th>
+                  <th>גורמים לאירוע</th>
+                  <th>תת-קטגוריה</th>
+                  <th>תת-תת קטגוריה</th>
                   <th>חומרת אירוע</th>
                   <th>תוצאת אירוע</th>
+                  <th>חומרת נזק</th>
+                  <th>חקירה</th>
                   <th>מיקום</th>
+                  <th>תיאור מיקום</th>
+                  <th>מזג אוויר</th>
+                  <th>קואורדינטות</th>
+                  <th>נפגעים</th>
                   <th>תיאור</th>
+                  <th>המלצות</th>
+                  <th>עלות</th>
                   <th>תאריך יצירה</th>
                   <th>סטטוס</th>
                   <th>פעולות</th>
                 </tr>
               </thead>
               <tbody>
-                {getEventsForTab().map((event, index) => (
+                {getEventsForTab().map((event) => (
                   <tr key={event.id}>
-                    <td>{events.findIndex(e => e.id === event.id) + 1}</td>
+                    <td>{event.id}</td>
                     <td>{event.unitName}</td>
                     <td>{new Date(event.date).toLocaleDateString('he-IL')}</td>
+                    <td>{event.time || '-'}</td>
+                    <td>{event.unitActivityType}</td>
+                    <td>{event.activityType}</td>
                     <td>{event.category}</td>
+                    <td>{event.eventFactor || '-'}</td>
+                    <td>{event.categorySubOptions || '-'}</td>
+                    <td>{event.subCategoryOptions || '-'}</td>
                     <td>
                       <span className={`${styles.severityBadge} ${styles[event.eventSeverity]}`}>
-                        {event.eventSeverity}
-                      </span>
+                        {event.eventSeverity}</span>
                     </td>
                     <td>{event.eventOutcome}</td>
+                    <td>{event.damageType || '-'}</td>
+                    <td>{event.investigation || '-'}</td>
                     <td>{event.location}</td>
+                    <td>{event.locationDescription || '-'}</td>
+                    <td>{event.weather || '-'}</td>
+                    <td>{event.coordinates.latitude ? `${event.coordinates.latitude}, ${event.coordinates.longitude}` : '-'}</td>
+                    <td>{formatCasualties(event.casualties)}</td>
                     <td className={styles.textCell}>
                       {event.text.length > 50 ? `${event.text.substring(0, 50)}...` : event.text}
                     </td>
+                    <td className={styles.textCell}>
+                      {event.recommendations ? (event.recommendations.length > 50 ? `${event.recommendations.substring(0, 50)}...` : event.recommendations) : '-'}
+                    </td>
+                    <td>{event.costAmount ? `${event.costAmount} ₪` : '-'}</td>
                     <td>{new Date(event.createdAt).toLocaleDateString('he-IL')}</td>
                     <td>
                       <select
                         value={event.status}
-                        onChange={(e) => handleStatusChange(event.id, e.target.value as 'בטיפול' | 'טופל')}
+                        onChange={(e) => handleStatusChange(event.id, e.target.value)}
                         className={styles.statusSelect}
                       >
                         <option value="בטיפול">בטיפול</option>

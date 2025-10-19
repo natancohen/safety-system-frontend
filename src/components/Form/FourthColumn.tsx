@@ -1,5 +1,5 @@
 import { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form';
-import type { FormData } from '../../types/FormTypes';
+import type { FormData } from '../../utils/validationSchema';
 import styles from '../../styles/FormBase.module.css';
 import { MAX_TEXT_LENGTH } from '../../constants/validationMessages';
 
@@ -20,13 +20,14 @@ export default function FourthColumn({
   const recommendationsLength = recommendationsValue.length;
 
   return (
-    <aside className={`${styles.column} ${styles.fourthColumn}`} data-label="המלצות">
+    <aside className={`${styles.column} ${styles.fourthColumn}`} data-label="המלצות ראשוניות">
       <div className={styles.fieldBox}>
-        <label className={styles.label}>המלצות ראשוניות</label>
+        <label className={styles.label}>המלצות ראשוניות:</label>
         <textarea
           className={styles.textarea}
           style={{ minHeight: '80px', maxHeight: '120px' }}
-          placeholder="המלצות ראשוניות לטיפול באירוע..."
+          placeholder="המלצות ראשוניות לטיפול באירוע."
+          maxLength={800}
           {...register('recommendations')}
         />
         <div className={`${styles.charCounter} ${styles[getCharCounterClass(recommendationsLength)]}`}>

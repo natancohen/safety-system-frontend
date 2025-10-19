@@ -4,7 +4,6 @@
   font-weight: 400;
   direction: rtl;
   
-  /* Light mode colors */
   --primary-color: #007bff;
   --primary-hover: #0056b3;
   --secondary-color: #6c757d;
@@ -33,7 +32,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dark mode styles */
 body.dark-mode {
   --background-color: #1a1a1a;
   --text-color: #e0e0e0;

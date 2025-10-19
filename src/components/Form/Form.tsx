@@ -1,15 +1,16 @@
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { formSchema, FormData } from '../../utils/validationSchema';
+import type { FormData } from '../../utils/validationSchema';
+import { formSchema } from '../../utils/validationSchema';
+import { createEvent, CreateEventDto } from '../../utils/api'; 
 import {
   unitOptions,
   unitActivityOptions,
   activityOptions,
   categoryOptions,
   eventSeverityOptions,
-  eventOutcomeOptions,
   damageSeverityOptions,
   injurySeverityOptions,
 } from '../../data/options';
@@ -36,6 +37,7 @@ export default function Form() {
       unitName: '',
       date: '',
       text: '',
+      time: '',
       unitActivityType: '',
       activityType: '',
       category: '',
@@ -54,7 +56,8 @@ export default function Form() {
       recommendations: '',
       costAmount: undefined,
       categorySubOptions: '',
-      subCategoryOptions: ''
+      subCategoryOptions: '',
+      eventFactor: ''
     }
   });
 
@@ -64,7 +67,6 @@ export default function Form() {
   });
 
   const [showCasualtiesModal, setShowCasualtiesModal] = useState(false);
-  const eventOutcome = watch('eventOutcome');
 
   const textValue = watch('text') || '';
   const textLength = textValue.length;
@@ -78,40 +80,41 @@ export default function Form() {
     append({ severity: '', count: 1 });
   };
 
-
   const onSubmit = async (data: FormData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Create event object with required fields for EventsPage
       const eventData = {
-        id: Date.now().toString(), // Simple ID generation
         unitName: data.unitName,
         date: data.date,
+        time: data.time,
         category: data.category,
         eventSeverity: data.eventSeverity,
         eventOutcome: data.eventOutcome,
+        damageType: data.damageType,
         location: data.location,
+        locationDescription: data.locationDescription,
+        weather: data.weather,
         text: data.text,
+        unitActivityType: data.unitActivityType,
+        activityType: data.activityType,
         coordinates: data.coordinates,
         casualties: data.casualties,
-        createdAt: new Date().toISOString(),
-        status: 'בטיפול' as const
+        subSubCategoryOptions: data.subSubCategoryOptions,
+        recommendations: data.recommendations,
+        costAmount: data.costAmount,
+        categorySubOptions: data.categorySubOptions,
+        subCategoryOptions: data.subCategoryOptions,
+        eventFactor: data.eventFactor,
       };
 
-      // Get existing events from localStorage
-      const existingEvents = localStorage.getItem('safetyEvents');
-      const events = existingEvents ? JSON.parse(existingEvents) : [];
+      const savedEvent = await createEvent(eventData as CreateEventDto);
       
-      // Add new event
-      events.push(eventData);
-      
-      // Save back to localStorage
-      localStorage.setItem('safetyEvents', JSON.stringify(events));
-      
-      alert(`שלחת את הנתונים בהצלחה! האירוע נשמר במערכת.`);
-    } catch (error) {
-      alert('אירעה שגיאה בשליחת הטופס');
+      console.log('Event saved successfully:', savedEvent);
+      alert(`האירוע נשמר בהצלחה במסד הנתונים! מספר אירוע: ${savedEvent.id}`);
+      navigate('/events');
+    } catch (error: any) {
+      console.error('שגיאה בשליחת הטופס:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'אירעה שגיאה לא ידועה';
+      alert(`אירעה שגיאה בשליחת הטופס: ${errorMessage}`);
     }
   };
 
@@ -119,8 +122,8 @@ export default function Form() {
     <div className={styles.formWrapper}>
       <div className={styles.header}>
         <h1 className={styles.title}>דיווח בטיחות</h1>
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={() => navigate('/')}
           style={{
             padding: '0.5rem 1rem',
@@ -163,9 +166,7 @@ export default function Form() {
             setValue={setValue}
             errors={errors}
             eventSeverityOptions={eventSeverityOptions}
-            eventOutcomeOptions={eventOutcomeOptions}
             damageSeverityOptions={damageSeverityOptions}
-            eventOutcome={eventOutcome}
             setShowCasualtiesModal={setShowCasualtiesModal}
             fieldsLength={fields.length}
             getCharCounterClass={getCharCounterClass}
@@ -183,15 +184,15 @@ export default function Form() {
             errors={errors}
             getCharCounterClass={getCharCounterClass}
           />
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className={styles.submitButton}
             disabled={isSubmitting}
           >
             {isSubmitting ? 'שולח...' : 'שלח נתונים'}
           </button>
         </section>
-      </form>  
+      </form>
       {showCasualtiesModal && (
         <CasualtiesModal
           fields={fields}
@@ -205,4 +206,4 @@ export default function Form() {
       )}
     </div>
   );
- }
+}

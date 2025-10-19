@@ -1,10 +1,11 @@
 import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import type { FormData } from '../../types/FormTypes';
+import type { FormData } from '../../utils/validationSchema';
 import styles from '../../styles/FormBase.module.css';
 import { MAX_TEXT_LENGTH } from '../../constants/validationMessages';
 import { locationOptions, weatherOptions } from '../../data/options';
+import { handlePinPlacement } from './openMap';
+
 
 interface LeftColumnProps {
   register: UseFormRegister<FormData>;
@@ -28,14 +29,12 @@ export default function LeftColumn({
   const coordinates = watch('coordinates') || { latitude: '', longitude: '' };
   const selectedLocation = watch('location') || '';
 
-  // Check if coordinates exist on component mount
   useEffect(() => {
     if (coordinates.latitude && coordinates.longitude) {
       setIsPinPlaced(true);
     }
   }, [coordinates.latitude, coordinates.longitude]);
 
-  // Listen for messages from the map window
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === 'COORDINATES_SELECTED') {
@@ -64,139 +63,13 @@ export default function LeftColumn({
     }
   };
 
-  const handlePinPlacement = () => {
-    // Create a custom HTML page that will handle the map interaction
-    const mapHtml = `
-<!DOCTYPE html>
-<html dir="rtl">
-<head>
-    <title>בחירת מיקום במפה</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body { margin: 0; font-family: Arial, sans-serif; direction: rtl; }
-        #map { height: 90vh; width: 100%; }
-        #instructions { 
-            padding: 10px; 
-            background: #f0f8ff; 
-            text-align: center; 
-            font-weight: bold;
-            border-bottom: 2px solid #007bff;
-        }
-        #coordinates { 
-            padding: 10px; 
-            background: #e8f5e8; 
-            text-align: center; 
-            font-weight: bold;
-        }
-        .button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            margin: 5px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .button:hover { background: #0056b3; }
-    </style>
-</head>
-<body>
-    <div id="instructions">
-        לחץ על המפה כדי לבחור מיקום. הקואורדינטות יישמרו אוטומטית בטופס.
-    </div>
-    <div id="map"></div>
-    <div id="coordinates">
-        <span id="coords-display">לחץ על המפה לבחירת מיקום</span>
-        <button class="button" onclick="saveCoordinates()" id="save-btn" style="display:none;">שמור קואורדינטות</button>
-        <button class="button" onclick="window.close()">סגור</button>
-    </div>
-
-    <script>
-        let map, marker, selectedLat, selectedLng;
-        
-        function initMap() {
-            // Center on Israel
-            const israel = { lat: 32.0853, lng: 34.7818 };
-            
-            map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 8,
-                center: israel,
-                mapTypeId: 'roadmap'
-            });
-            
-            map.addListener('click', function(event) {
-                const lat = event.latLng.lat();
-                const lng = event.latLng.lng();
-                
-                selectedLat = lat;
-                selectedLng = lng;
-                
-                // Remove existing marker
-                if (marker) {
-                    marker.setMap(null);
-                }
-                
-                // Add new marker
-                marker = new google.maps.Marker({
-                    position: { lat: lat, lng: lng },
-                    map: map,
-                    title: 'מיקום נבחר'
-                });
-                
-                // Update coordinates display
-                document.getElementById('coords-display').textContent = 
-                    \`קו רוחב: \${lat.toFixed(6)}, קו אורך: \${lng.toFixed(6)}\`;
-                document.getElementById('save-btn').style.display = 'inline-block';
-            });
-        }
-        
-        function saveCoordinates() {
-            if (selectedLat && selectedLng) {
-                // Send coordinates to parent window
-                if (window.opener) {
-                    window.opener.postMessage({
-                        type: 'COORDINATES_SELECTED',
-                        lat: selectedLat,
-                        lng: selectedLng
-                    }, '*');
-                }
-                window.close();
-            }
-        }
-        
-        // Initialize map when Google Maps API loads
-        window.initMap = initMap;
-    </script>
-    <script async defer 
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dOWTgHz-y931Pk&callback=initMap">
-    </script>
-</body>
-</html>`;
-
-    // Create a blob URL for the HTML content
-    const blob = new Blob([mapHtml], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    
-    // Open the map in a new window
-    const mapWindow = window.open(url, 'MapSelector', 'width=800,height=600,scrollbars=yes,resizable=yes');
-    
-    setIsWaitingForCoordinates(true);
-    
-    // Clean up the blob URL when the window is closed
-    const checkClosed = setInterval(() => {
-      if (mapWindow?.closed) {
-        URL.revokeObjectURL(url);
-        setIsWaitingForCoordinates(false);
-        clearInterval(checkClosed);
-      }
-    }, 1000);
+  const handlePinPlacementClick = () => {
+    handlePinPlacement(setIsWaitingForCoordinates);
   };
 
   const handleCoordinateChange = (field: 'latitude' | 'longitude', value: string) => {
     setValue(`coordinates.${field}`, value);
     
-    // Check if both coordinates are filled
     const currentCoords = watch('coordinates');
     const otherField = field === 'latitude' ? 'longitude' : 'latitude';
     
@@ -210,7 +83,7 @@ export default function LeftColumn({
   return (
     <aside className={`${styles.column} ${styles.leftColumn}`} data-label="פרטי המיקום">
       <div className={styles.fieldBox}>
-        <label className={styles.label}>מיקום *</label>
+        <label className={styles.label}>מיקום האירוע: </label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8rem', alignItems: 'center' }}>
           {locationOptions.map(option => (
             <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
@@ -233,11 +106,12 @@ export default function LeftColumn({
       </div>
 
       <div className={styles.fieldBox}>
-        <label className={styles.label}>תיאור מיקום</label>
+        <label className={styles.label}>תיאור מיקום: </label>
         <textarea
           className={styles.textarea}
-          style={{ minHeight: '40px', maxHeight: '60px' }}
+          style={{ minHeight: '40px', maxHeight: '100px' }}
           placeholder="תיאור מפורט של המיקום..."
+          maxLength={800}
           {...register('locationDescription')}
         />
         <div className={`${styles.charCounter} ${styles[getCharCounterClass(locationDescriptionLength)]}`}>
@@ -247,7 +121,7 @@ export default function LeftColumn({
       </div>
 
       <div className={styles.fieldBox}>
-        <label className={styles.label}>מזג אוויר</label>
+        <label className={styles.label}>מזג אוויר: </label>
         <select 
           className={styles.select}
           {...register('weather')}
@@ -261,7 +135,7 @@ export default function LeftColumn({
       </div>
 
       <div className={styles.fieldBox}>
-        <label className={styles.label}>נ.צ. (קואורדינטות)</label>
+        <label className={styles.label}>נ.צ. (קואורדינטות):</label>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <input
             type="number"
@@ -294,7 +168,7 @@ export default function LeftColumn({
       </div>
 
       <div className={styles.fieldBox}>
-        <label className={styles.label}>הצגת מיקום נ.צ.</label>
+        <label className={styles.label}>הצגת מיקום נ.צ. :</label>
         <button
           type="button"
           className={styles.input}
@@ -318,10 +192,10 @@ export default function LeftColumn({
       </div>
 
       <div className={styles.fieldBox}>
-        <label className={styles.label}>נעיצת סיכה במפה</label>
+        <label className={styles.label}>נעיצת סיכה במפה:</label>
         <button
           type="button"
-          onClick={handlePinPlacement}
+          onClick={handlePinPlacementClick}
           style={{
             width: '100%',
             padding: '0.5rem',

@@ -1,5 +1,5 @@
 import { UseFormRegister, FieldErrors, FieldArrayWithId } from 'react-hook-form';
-import type { FormData } from '../../types/FormTypes';
+import type { FormData } from '../../utils/validationSchema';
 import styles from '../../styles/Modal.module.css';
 
 interface CasualtiesModalProps {

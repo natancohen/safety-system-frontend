@@ -58,7 +58,7 @@
   display: flex;
   flex-direction: column;
   height: calc(100vh - 3rem);
-  overflow: hidden;
+  overflow: auto;
 }
 
 .formGrid {
@@ -80,7 +80,7 @@
 
 .column {
   background: var(--card-background);
-  padding: 0.6rem 0.6rem 0.2rem; /* UPDATED: צמצום padding תחתון מ-0.6rem ל-0.2rem */
+  padding: 0.6rem; 
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-medium);
   height: 100%;
@@ -89,7 +89,7 @@
   border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 5.5rem);
+  max-height: calc(80vh - 5rem);
 }
 
 .rightColumn {
@@ -168,7 +168,6 @@
   box-shadow: 0 0 0 1px var(--primary-color);
 }
 
-/* שדות טקסט ספציפיים לכל עמודה */
 .rightColumn .textarea {
   min-height: 3.5rem;
   max-height: 4.5rem;
@@ -180,8 +179,8 @@
 }
 
 .leftColumn .textarea {
-  min-height: 1.8rem;
-  max-height: 2.5rem;
+  min-height: 5rem;
+  max-height: 8rem;
 }
 
 .error {
@@ -215,7 +214,7 @@
 .submitButton {
   grid-area: submitButton;
   margin-top: 0.4rem;
-  padding: 0.5rem 1.2rem;
+  padding: 0.5rem 2rem;
   border: none;
   border-radius: 6px;
   background: var(--primary-color);
@@ -254,7 +253,6 @@
   direction: ltr;
 }
 
-/* התאמות לאזורי זמן וקואורדינטות */
 .leftColumn .fieldBox:has(input[type="number"]) div {
   display: flex;
   gap: 0.3rem;
@@ -265,7 +263,6 @@
   font-size: 0.75rem;
 }
 
-/* Responsive design */
 @media (max-width: 1400px) {
   .formGrid {
     grid-template-columns: 1fr 0.75fr 0.85fr 1fr;
@@ -333,7 +330,7 @@
   }
   
   .column {
-    padding: 0.6rem 0.6rem 0.2rem; /* UPDATED: צמצום padding תחתון מ-0.6rem ל-0.2rem */
+    padding: 0.6rem 0.6rem 0.2rem; 
     height: auto;
     max-height: none;
     overflow: visible;
@@ -355,13 +352,13 @@
   
   .leftColumn .textarea {
     min-height: 2rem;
-    max-height: 2.5rem;
+    max-height: 4rem;
   }
 }
 
 @media (max-width: 480px) {
   .column {
-    padding: 0.4rem 0.4rem 0.1rem; /* UPDATED: צמצום padding תחתון מ-0.4rem ל-0.1rem */
+    padding: 0.4rem 0.4rem 0.1rem; 
   }
 
   .label {
@@ -392,4 +389,18 @@ body.dark-mode .input {
 
 body.dark-mode .textarea {
   border-color: #4b5563;
+}
+
+
+.hidePlaceholder::-webkit-datetime-edit {
+  color: transparent;
+}
+
+.hidePlaceholder::-webkit-clear-button {
+  display: none;
+}
+
+.hidePlaceholder::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
 }
