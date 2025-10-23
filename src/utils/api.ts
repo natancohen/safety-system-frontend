@@ -16,6 +16,7 @@ export interface Event {
   time?: string;
   category: string;
   eventSeverity: string;
+  eventResult: string;
   eventOutcome: string;
   damageType?: string;
   location: string;

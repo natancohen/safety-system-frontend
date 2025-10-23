@@ -20,6 +20,10 @@ export const eventSeverityOptions = [
   "קל", "בינוני", "חמור"
 ];
 
+export const eventResultOptions = [
+  "1זמני", "2זמני"
+];
+
 export const eventOutcomeOptions = [
   " אין נפגעים אין נזק",
   " אין נפגעים יש נזק", 

@@ -11,6 +11,7 @@ import {
   activityOptions,
   categoryOptions,
   eventSeverityOptions,
+  eventResultOptions,
   damageSeverityOptions,
   injurySeverityOptions,
 } from '../../data/options';
@@ -42,6 +43,7 @@ export default function Form() {
       activityType: '',
       category: '',
       eventSeverity: '',
+      eventResult:'',
       eventOutcome: '',
       damageType: '',
       location: '',
@@ -88,6 +90,7 @@ export default function Form() {
         time: data.time,
         category: data.category,
         eventSeverity: data.eventSeverity,
+        eventResult: data.eventResult,
         eventOutcome: data.eventOutcome,
         damageType: data.damageType,
         location: data.location,
@@ -166,6 +169,7 @@ export default function Form() {
             setValue={setValue}
             errors={errors}
             eventSeverityOptions={eventSeverityOptions}
+            eventResultOptions={eventResultOptions}
             damageSeverityOptions={damageSeverityOptions}
             setShowCasualtiesModal={setShowCasualtiesModal}
             fieldsLength={fields.length}

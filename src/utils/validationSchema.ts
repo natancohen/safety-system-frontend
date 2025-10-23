@@ -8,14 +8,12 @@ export const formSchema = z.object({
   unitActivityType: z.string().min(1, 'מאפיין פעילות יחידה הינו שדה חובה'),
   activityType: z.string().min(1, 'מאפיין פעילות פרט הינו שדה חובה'),
   category: z.string().min(1, 'מאפיין פעילות תחומי הינו שדה חובה'),
-  
   categorySubOptions: z.string().min(1, 'קטגוריית פעילות תחומי הינה שדה חובה'),
   subCategoryOptions: z.string().min(1, 'תת קטגוריית פעילות תחומי הינה שדה חובה'),
   subSubCategoryOptions: z.string().optional(),
-  
   eventFactor: z.string().min(1, 'גורמים לאירוע הינו שדה חובה'),
-  
   eventSeverity: z.string().min(1, 'חומרת אירוע הינה שדה חובה'),
+  eventResult: z.string().min(1, 'תוצאת אירוע הינה שדה חובה'),
   eventOutcome: z.string().min(1, 'תוצאת אירוע הינה שדה חובה'),
   damageType: z.string().min(1, 'חומרת נזק לרכוש הינה שדה חובה'),
   location: z.string().min(1, 'מיקום הינו שדה חובה'),

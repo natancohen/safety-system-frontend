@@ -2,7 +2,8 @@ import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'rea
 import type { FormData } from '../../utils/validationSchema';
 import styles from '../../styles/FormBase.module.css';
 import { eventFactorsOptions } from '../../data/options2';
-import { eventOutcomeOptions } from '../../data/options';
+import { eventOutcomeOptions, eventResultOptions } from '../../data/options';
+
 
 interface MiddleColumnProps {
   register: UseFormRegister<FormData>;
@@ -11,6 +12,7 @@ interface MiddleColumnProps {
   errors: FieldErrors<FormData>;
   eventSeverityOptions: string[];
   damageSeverityOptions: string[];
+  eventResultOptions: string[];
   setShowCasualtiesModal: (show: boolean) => void;
   fieldsLength: number;
   getCharCounterClass: (length: number) => string;
@@ -29,7 +31,6 @@ export default function MiddleColumn({
   const selectedSubCategory = watch('categorySubOptions');
   const selectedSubCategoryOptions = watch('subCategoryOptions');
   const eventOutcome = watch('eventOutcome');
-
   const getFactorsForCategory = () => {
     try {
       if (!selectedCategory) return [];
@@ -103,22 +104,28 @@ export default function MiddleColumn({
 
       <div className={styles.fieldBox}>
         <label className={styles.label}>תוצאות האירוע: </label>
-        <select className={styles.select} {...register('eventSeverity')}>
+        <select 
+          className={styles.select} 
+          {...register('eventResult')}
+        >
           <option value="">בחר/י</option>
-          {eventSeverityOptions.map((option) => (
+          {eventResultOptions.map((option) => (
             <option key={option} value={option}>
               {option}
             </option>
           ))}
         </select>
-        {errors.eventSeverity && (
-          <span className={styles.error}>{errors.eventSeverity.message}</span>
+        {errors.eventResult && (
+          <span className={styles.error}>{errors.eventResult.message}</span>
         )}
       </div>
 
       <div className={styles.fieldBox}>
         <label className={styles.label}>חומרת האירוע: </label>
-        <select className={styles.select} {...register('eventSeverity')}>
+        <select 
+          className={styles.select} 
+          {...register('eventSeverity')}
+        >
           <option value="">בחר/י</option>
           {eventSeverityOptions.map((option) => (
             <option key={option} value={option}>
