@@ -1,11 +1,11 @@
 import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import type { FormData } from '../../utils/validationSchema';
-import styles from '../../styles/FormBase.module.css';
-import { MAX_TEXT_LENGTH } from '../../constants/validationMessages';
-import { locationOptions, weatherOptions } from '../../data/options';
-import { handlePinPlacement } from './openMap';
-
+import type { FormData } from '../utils/validationSchema';
+import styles from '../styles/FormBase.module.css';
+import { MAX_TEXT_LENGTH } from '../utils/validationMessages';
+import { locationOptions, weatherOptions } from '../data/options';
+import { handlePinPlacement } from '../components/openMap';
+import  CompactSelect  from '../components/compact-select'; 
 
 interface LeftColumnProps {
   register: UseFormRegister<FormData>;
@@ -122,15 +122,12 @@ export default function LeftColumn({
 
       <div className={styles.fieldBox}>
         <label className={styles.label}>מזג אוויר: </label>
-        <select 
-          className={styles.select}
-          {...register('weather')}
-        >
-          <option value="">בחר מזג אוויר</option>
-          {weatherOptions.map(option => (
-            <option key={option} value={option}>{option}</option>
-          ))}
-        </select>
+        <CompactSelect
+          value={watch('weather')}
+          onChange={(v) => setValue('weather', v)}
+          options={weatherOptions}
+          placeholder="בחר מזג אוויר"
+        />
         {errors.weather && <span className={styles.error}>{errors.weather.message}</span>}
       </div>
 

@@ -1,106 +1,99 @@
-import axios from 'axios';
+import axios, { type AxiosResponse } from 'axios';
 
-const API_URL = 'http://localhost:3000';
+export interface Coordinates { latitude: number; longitude: number; }
+export interface Casualty { severity: string; count: number; }
 
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+export interface CreateEventDto {
+  rightColumn: {
+    unitName: string;
+    date: string;
+    time?: string;
+    text: string;
+    unitActivityOptions: string;
+    activityOptions: string;
+    categoryOptions: string;
+    categorySubOptions?: string;
+    subCategoryOptions?: string;
+    subSubCategoryOptions?: string;
+  };
+  middleColumn: {
+    eventFactorOptions?: string;
+    eventResultOptions: string;
+    eventSeverity: string;
+    eventOutcomeByCategory: string;
+    damageType?: string;
+  };
+  fourthColumn: {
+    recommendations?: string;
+    costAmount?: number;
+  };
+  leftColumn: {
+    location: string;
+    locationDescription?: string;
+    weather?: string;
+    coordinates?: Coordinates;
+  };
+}
 
 export interface Event {
+  unitActivityOptions: string;
+  activityOptions: string;
+  categoryOptions: string;
+  eventFactorOptions?: string;
+  eventOutcomeByCategory: string;
   id: number;
   unitName: string;
   date: string;
   time?: string;
-  category: string;
+  text: string;
+  categorySubOptions?: string;
+  subCategoryOptions?: string;
+  subSubCategoryOptions?: string;
+
+  eventResultOptions: string;
   eventSeverity: string;
-  eventResult: string;
-  eventOutcome: string;
   damageType?: string;
+
+  recommendations?: string;
+  costAmount?: number;
+
   location: string;
   locationDescription?: string;
   weather?: string;
-  text: string;
-  unitActivityType: string;
-  activityType: string;
-  investigation?: string;
-  coordinates: {
-    latitude: string;
-    longitude: string;
-  };
-  casualties?: Array<{
-    severity: string;
-    count: number;
-  }>;
-  subSubCategoryOptions?: string;
-  recommendations?: string;
-  costAmount?: number;
-  categorySubOptions?: string;
-  subCategoryOptions?: string;
-  eventFactor?: string;
-  createdAt: string;
-  status: string;
-  imageUrl?: string;
+  latitude?: number;
+  longitude?: number;
+  
+
+  status:  'בטיפול' | 'טופל';
 }
 
-export interface CreateEventDto {
-  unitName: string;
-  date: string;
-  time?: string;
-  category: string;
-  eventSeverity: string;
-  eventOutcome: string;
-  damageType?: string;
-  location: string;
-  locationDescription?: string;
-  weather?: string;
-  text: string;
-  unitActivityType: string;
-  activityType: string;
-  investigation?: string;
-  coordinates: {
-    latitude: string;
-    longitude: string;
-  };
-  casualties?: Array<{
-    severity: string;
-    count: number;
-  }>;
-  subSubCategoryOptions?: string;
-  recommendations?: string;
-  costAmount?: number;
-  categorySubOptions?: string;
-  subCategoryOptions?: string;
-  eventFactor?: string;
-}
+const API_BASE = import.meta.env.VITE_API_BASE ?? '/api';
 
-// קבלת כל האירועים
-export const getEvents = async (): Promise<Event[]> => {
-  const response = await api.get<Event[]>('/events');
-  return response.data;
-};
+const api = axios.create({
+  baseURL: API_BASE,
+  withCredentials: true,
+  headers: { 'Content-Type': 'application/json' },
+});
 
-// קבלת אירוע בודד
-export const getEvent = async (id: number): Promise<Event> => {
-  const response = await api.get<Event>(`/events/${id}`);
-  return response.data;
-};
+const getJson = async <T>(p: Promise<AxiosResponse<T>>): Promise<T> => (await p).data;
 
-// יצירת אירוע חדש
-export const createEvent = async (eventData: CreateEventDto): Promise<Event> => {
-  const response = await api.post<Event>('/events', eventData);
-  return response.data;
-};
+export const getEvents = async (): Promise<Event[]> =>
+  getJson(api.get<Event[]>('/events'));
 
-// עדכון אירוע
-export const updateEvent = async (id: number, eventData: Partial<Event>): Promise<Event> => {
-  const response = await api.put<Event>(`/events/${id}`, eventData);
-  return response.data;
-};
+export const getEvent = async (id: number): Promise<Event> =>
+  getJson(api.get<Event>(`/events/${id}`));
 
-// מחיקת אירוע
+export const createEvent = async (dto: CreateEventDto): Promise<Event> =>
+  getJson(api.post<Event>('/events', dto));
+
+export const updateEvent = async (id: number, dto: Partial<CreateEventDto> | Partial<Event>): Promise<Event> =>
+  getJson(api.patch<Event>(`/events/${id}`, dto));
+
+export const updateEventStatus = async (
+  id: number,
+  status: Event['status'],
+): Promise<Event> => getJson(api.patch<Event>(`/events/${id}/status`, { status }));
+
 export const deleteEvent = async (id: number): Promise<void> => {
   await api.delete(`/events/${id}`);
 };

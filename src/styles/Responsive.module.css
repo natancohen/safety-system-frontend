@@ -3,16 +3,16 @@
 @media (max-width: 1400px) {
   .formGrid {
     grid-template-columns: 1fr 0.75fr 0.85fr 1fr;
-    gap: 0.6rem;
+    gap: 0.4rem;
   }
-  
+
   .column {
-    padding: 0.7rem;
+    padding: 0.4rem;
   }
-  
+
   .fieldBox {
-    margin-bottom: 0.4rem;
-    gap: 0.15rem;
+    margin-bottom: 0.25rem;
+    gap: 0.1rem;
   }
 }
 
@@ -24,24 +24,24 @@
       "fourthColumn leftColumn"
       "submitButton submitButton";
     grid-template-rows: 1fr 1fr auto;
-    gap: 0.6rem;
+    gap: 0.4rem;
   }
-  
+
   .formWrapper {
     width: 100%;
     height: 100vh;
     margin: 0;
-    padding: 0.8rem;
+    padding: 0.5rem;
     overflow: hidden;
   }
-  
+
   .column {
-    max-height: calc(50vh - 3rem);
+    max-height: calc(50vh - 2.5rem);
     overflow-y: auto;
   }
-  
+
   .fieldBox {
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
   }
 }
 
@@ -55,17 +55,17 @@
       "leftColumn"
       "submitButton";
     grid-template-rows: auto auto auto auto auto;
-    gap: 0.5rem;
+    gap: 0.3rem;
   }
-  
+
   .formWrapper {
     width: 100%;
     height: auto;
     margin: 0;
-    padding: 0.5rem;
+    padding: 0.3rem;
     overflow: visible;
   }
-  
+
   .form {
     height: auto;
     overflow: visible;
@@ -76,46 +76,48 @@
     height: auto;
     max-height: none;
     overflow: visible;
-    padding: 0.6rem;
+    padding: 0.4rem;
   }
 
   .fieldBox {
-    gap: 0.3rem;
-    margin-bottom: 0.4rem;
+    gap: 0.2rem;
+    margin-bottom: 0.25rem;
   }
 
   .submitButton {
     min-width: 100%;
-    margin-top: 0.5rem;
+    margin-top: 0.3rem;
   }
-  
+
   .label {
     font-size: 0.75rem;
   }
-  
+
   .select, .input {
     height: 2.1rem;
     min-height: 2.1rem;
     font-size: 0.8rem;
+    padding: 0.3rem;
   }
-  
+
   .textarea {
     font-size: 0.75rem;
+    padding: 0.3rem;
   }
 }
 
 @media (max-width: 480px) {
   .formWrapper {
-    padding: 0.3rem;
+    padding: 0.2rem;
   }
-  
+
   .column {
-    padding: 0.4rem;
+    padding: 0.25rem;
   }
 
   .fieldBox {
-    gap: 0.25rem;
-    margin-bottom: 0.35rem;
+    gap: 0.15rem;
+    margin-bottom: 0.2rem;
   }
 
   .label {
@@ -125,21 +127,21 @@
 
   .select, .input {
     font-size: 0.75rem;
-    padding: 0.35rem;
+    padding: 0.25rem;
     height: 1.9rem;
     min-height: 1.9rem;
   }
-  
+
   .textarea {
     font-size: 0.7rem;
-    padding: 0.35rem;
+    padding: 0.25rem;
     line-height: 1.2;
   }
-  
+
   .charCounter {
     font-size: 0.6rem;
   }
-  
+
   .error {
     font-size: 0.65rem;
   }

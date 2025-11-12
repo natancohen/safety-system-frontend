@@ -4,6 +4,7 @@ declare module '*.module.css' {
 }
 
 interface ImportMetaEnv {
+  [x: string]: string;
   readonly VITE_API_BASE: string;
 }
 

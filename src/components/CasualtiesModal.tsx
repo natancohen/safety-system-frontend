@@ -1,6 +1,6 @@
 import { UseFormRegister, FieldErrors, FieldArrayWithId } from 'react-hook-form';
-import type { FormData } from '../../utils/validationSchema';
-import styles from '../../styles/Modal.module.css';
+import type { FormData } from '../utils/validationSchema';
+import styles from '../styles/Modal.module.css';
 
 interface CasualtiesModalProps {
   fields: FieldArrayWithId<FormData, "casualties", "id">[];
@@ -39,7 +39,7 @@ export default function CasualtiesModal({
             <div className={styles.casualtyGrid}>
               <div className={styles.casualtyField}>
                 <label className={styles.casualtyLabel}>
-                  חומרת פציעה:
+                  חומרת פגיעה:
                 </label>
                 <select 
                   className={styles.select}

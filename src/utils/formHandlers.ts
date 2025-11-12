@@ -5,11 +5,11 @@ export const handleCategoryChange = (
   setValue: UseFormSetValue<FormData>,
   value: string
 ) => {
-  setValue('category', value);
+  setValue('categoryOptions', value);
   setValue('categorySubOptions', ''); 
   setValue('subCategoryOptions', ''); 
-  setValue('eventFactor', ''); 
-  setValue('eventOutcome', ''); 
+  setValue('eventFactorsOptions', ''); 
+  setValue('eventOutcomeByCategory', ''); 
 };
 
 export const handleSubCategoryChange = (
@@ -19,7 +19,7 @@ export const handleSubCategoryChange = (
   setValue('categorySubOptions', value);
   setValue('subCategoryOptions', '');
   setValue('subSubCategoryOptions', '');
-  setValue('eventFactor', ''); 
+  setValue('eventFactorsOptions', ''); 
 };
 
 export const handleSubCategoryOptionsChange = (
@@ -28,7 +28,7 @@ export const handleSubCategoryOptionsChange = (
 ) => {
   setValue('subCategoryOptions', value);
   setValue('subSubCategoryOptions', '');
-  setValue('eventFactor', ''); 
+  setValue('eventFactorsOptions', ''); 
 };
 
 export const handleSubSubCategoryOptionsChange = (

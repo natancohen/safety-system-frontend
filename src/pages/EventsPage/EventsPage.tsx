@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import styles from './EventsPage.module.css';
-import { getEvents, updateEvent, deleteEvent, Event } from '../../utils/api';
+import { getEvents, deleteEvent, updateEventStatus } from '../../utils/api';
+import type { Event as AppEvent } from '../../utils/api';
+import  InlinePopover  from '../../components/InlinePopover';
+import HeaderNav from '@components/headerNav';
 
 interface FilterState {
   eventNumber: string;
@@ -12,13 +14,8 @@ interface FilterState {
   unitName: string;
 }
 
-const formatCasualties = (casualties?: Event['casualties']) => {
-  if (!casualties || casualties.length === 0) return '-';
-  return casualties.map(c => `${c.severity} (${c.count})`).join(', ');
-};
-
 export default function EventsPage() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<AppEvent[]>([]);
   const [activeTab, setActiveTab] = useState<string>('בטיפול');
   const [filters, setFilters] = useState<FilterState>({
     eventNumber: '',
@@ -26,18 +23,19 @@ export default function EventsPage() {
     dateTo: '',
     status: '',
     severity: '',
-    unitName: ''
+    unitName: '',
   });
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<AppEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadEvents = async () => {
+  const loadEvents = async (): Promise<void> => {
     try {
       setLoading(true);
       const data = await getEvents();
       setEvents(data);
-      setFilteredEvents(data);
+      setFilteredEvents(applyCurrentFilters(data, filters));
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('שגיאה בטעינת אירועים:', error);
       alert('שגיאה בטעינת האירועים מהשרת');
     } finally {
@@ -46,101 +44,90 @@ export default function EventsPage() {
   };
 
   useEffect(() => {
-    loadEvents();
+    void loadEvents();
   }, []);
 
-  const handleStatusChange = async (eventId: number, newStatus: string) => {
+  const applyCurrentFilters = (source: AppEvent[], f: FilterState): AppEvent[] => {
+    let res = source;
+
+    if (f.eventNumber) {
+      const idNum = Number.parseInt(f.eventNumber, 10);
+      res = res.filter((ev) => ev.id === idNum);
+    }
+    if (f.dateFrom) {
+      res = res.filter((ev) => new Date(ev.date) >= new Date(f.dateFrom));
+    }
+    if (f.dateTo) {
+      res = res.filter((ev) => new Date(ev.date) <= new Date(f.dateTo));
+    }
+    if (f.status) {
+      res = res.filter((ev) => ev.status === f.status);
+    }
+    if (f.severity) {
+      res = res.filter((ev) => ev.eventSeverity === f.severity);
+    }
+    if (f.unitName) {
+      res = res.filter((ev) => ev.unitName.toLowerCase().includes(f.unitName.toLowerCase()));
+    }
+    return res;
+  };
+
+  const handleStatusChange = async (eventId: number, newStatus: AppEvent['status']): Promise<void> => {
     try {
-      await updateEvent(eventId, { status: newStatus });
-      const updatedEvents = events.map(event => 
-        event.id === eventId ? { ...event, status: newStatus } : event
-      );
-      setEvents(updatedEvents);
-      setFilteredEvents(updatedEvents);
+      const updatedFromServer = await updateEventStatus(eventId, newStatus);
+      const nextEvents = events.map((ev) => (ev.id === eventId ? updatedFromServer : ev));
+      setEvents(nextEvents);
+      setFilteredEvents(applyCurrentFilters(nextEvents, filters));
+      if (activeTab !== updatedFromServer.status) {
+        setActiveTab(updatedFromServer.status);
+      }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('שגיאה בעדכון סטטוס:', error);
       alert('שגיאה בעדכון הסטטוס');
     }
   };
 
-  const handleFilterChange = (field: keyof FilterState, value: string) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
+  const handleFilterChange = (field: keyof FilterState, value: string): void => {
+    const next = { ...filters, [field]: value };
+    setFilters(next);
+    setFilteredEvents(applyCurrentFilters(events, next));
   };
 
-  const applyFilters = () => {
-    let filtered = events;
-
-    if (filters.eventNumber) {
-      const eventId = parseInt(filters.eventNumber);
-      filtered = filtered.filter(event => event.id === eventId);
-    }
-
-    if (filters.dateFrom) {
-      filtered = filtered.filter(event => 
-        new Date(event.date) >= new Date(filters.dateFrom)
-      );
-    }
-
-    if (filters.dateTo) {
-      filtered = filtered.filter(event => 
-        new Date(event.date) <= new Date(filters.dateTo)
-      );
-    }
-
-    if (filters.status) {
-      filtered = filtered.filter(event => event.status === filters.status);
-    }
-
-    if (filters.severity) {
-      filtered = filtered.filter(event => event.eventSeverity === filters.severity);
-    }
-
-    if (filters.unitName) {
-      filtered = filtered.filter(event => 
-        event.unitName.toLowerCase().includes(filters.unitName.toLowerCase())
-      );
-    }
-
-    setFilteredEvents(filtered);
-  };
-
-  const resetFilters = () => {
-    setFilters({
+  const resetFilters = (): void => {
+    const empty: FilterState = {
       eventNumber: '',
       dateFrom: '',
       dateTo: '',
       status: '',
       severity: '',
-      unitName: ''
-    });
+      unitName: '',
+    };
+    setFilters(empty);
     setFilteredEvents(events);
   };
 
-  const handleDeleteEvent = async (id: number) => {
+  const handleDeleteEvent = async (id: number): Promise<void> => {
     if (!confirm('האם אתה בטוח שברצונך למחוק את האירוע?')) return;
-    
     try {
       await deleteEvent(id);
-      const updatedEvents = events.filter(event => event.id !== id);
-      setEvents(updatedEvents);
-      setFilteredEvents(updatedEvents);
+      const next = events.filter((ev) => ev.id !== id);
+      setEvents(next);
+      setFilteredEvents(applyCurrentFilters(next, filters));
       alert('האירוע נמחק בהצלחה');
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('שגיאה במחיקת אירוע:', error);
       alert('שגיאה במחיקת האירוע');
     }
   };
 
-  const getEventsForTab = () => {
-    return filteredEvents.filter(event => event.status === activeTab);
-  };
+  const getEventsForTab = (): AppEvent[] => filteredEvents.filter((ev) => ev.status === activeTab);
 
   if (loading) {
     return (
       <main className={styles.pageContainer} dir="rtl">
-        <p style={{ textAlign: 'center', fontSize: '1.5rem', marginTop: '2rem' }}>
-          טוען אירועים...
-        </p>
+        <p style={{ textAlign: 'center', fontSize: '1.5rem', marginTop: '2rem' }}>טוען אירועים...</p>
       </main>
     );
   }
@@ -148,10 +135,7 @@ export default function EventsPage() {
   return (
     <main className={styles.pageContainer} dir="rtl">
       <header className={styles.header}>
-        <h1 className={styles.title}>ניהול אירועי בטיחות</h1>
-        <Link to="/" className={styles.backButton}>
-          🏠 חזרה לעמוד הבית
-        </Link>
+        <HeaderNav/>
       </header>
 
       <section className={styles.filterSection}>
@@ -203,10 +187,10 @@ export default function EventsPage() {
               className={styles.filterInput}
             >
               <option value="">הכל</option>
-              <option value="קל">קל</option>
-              <option value="בינוני">בינוני</option>
-              <option value="חמור">חמור</option>
-              <option value="קטלני">קטלני</option>
+              <option value="Low">קל</option>
+              <option value="Medium">בינוני</option>
+              <option value="High">חמור</option>
+              <option value="Fatal">קטלני</option>
             </select>
           </div>
           <div className={styles.filterItem}>
@@ -221,7 +205,7 @@ export default function EventsPage() {
           </div>
         </div>
         <div className={styles.filterButtons}>
-          <button onClick={applyFilters} className={styles.filterButton}>
+          <button onClick={() => setFilteredEvents(applyCurrentFilters(events, filters))} className={styles.filterButton}>
             🔍 סינון
           </button>
           <button onClick={resetFilters} className={styles.resetButton}>
@@ -236,13 +220,13 @@ export default function EventsPage() {
             className={`${styles.tab} ${activeTab === 'בטיפול' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('בטיפול')}
           >
-            בטיפול ({filteredEvents.filter(e => e.status === 'בטיפול').length})
+            בטיפול ({filteredEvents.filter((e) => e.status === 'בטיפול').length})
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'טופל' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('טופל')}
           >
-            טופל ({filteredEvents.filter(e => e.status === 'טופל').length})
+            טופל ({filteredEvents.filter((e) => e.status === 'טופל').length})
           </button>
         </div>
       </section>
@@ -259,69 +243,40 @@ export default function EventsPage() {
               <thead>
                 <tr>
                   <th>מספר אירוע</th>
-                  <th>יחידה</th>
-                  <th>תאריך</th>
-                  <th>שעה</th>
-                  <th>מאפיין פעילות יחידה</th>
-                  <th>מאפיין פעילות פרט</th>
-                  <th>קטגוריה</th>
-                  <th>גורמים לאירוע</th>
-                  <th>תת-קטגוריה</th>
-                  <th>תת-תת קטגוריה</th>
+                  <th>תאריך אירוע</th>
+                  <th>יחידת משנה</th>
+                  <th>מאפיין תחומי</th>
                   <th>חומרת אירוע</th>
-                  <th>תוצאת אירוע</th>
-                  <th>חומרת נזק</th>
-                  <th>חקירה</th>
-                  <th>מיקום</th>
-                  <th>תיאור מיקום</th>
-                  <th>מזג אוויר</th>
-                  <th>קואורדינטות</th>
-                  <th>נפגעים</th>
-                  <th>תיאור</th>
-                  <th>המלצות</th>
-                  <th>עלות</th>
-                  <th>תאריך יצירה</th>
+                  <th>תוצאות אירוע</th>
+                  <th>מיקום אירוע</th>
+                  <th>תיאור אירוע</th>
                   <th>סטטוס</th>
                   <th>פעולות</th>
                 </tr>
               </thead>
               <tbody>
-                {getEventsForTab().map((event) => (
-                  <tr key={event.id}>
-                    <td>{event.id}</td>
-                    <td>{event.unitName}</td>
-                    <td>{new Date(event.date).toLocaleDateString('he-IL')}</td>
-                    <td>{event.time || '-'}</td>
-                    <td>{event.unitActivityType}</td>
-                    <td>{event.activityType}</td>
-                    <td>{event.category}</td>
-                    <td>{event.eventFactor || '-'}</td>
-                    <td>{event.categorySubOptions || '-'}</td>
-                    <td>{event.subCategoryOptions || '-'}</td>
+                {getEventsForTab().map((ev) => (
+                  <tr key={ev.id}>
+                    <td>{ev.id}</td>
+                    <td>{new Date(ev.date).toLocaleDateString('he-IL')}</td>
+                    <td>{ev.unitName}</td>
+                    <td>{ev.categoryOptions}</td>
                     <td>
-                      <span className={`${styles.severityBadge} ${styles[event.eventSeverity]}`}>
-                        {event.eventSeverity}</span>
+                      <span className={`${styles.severityBadge} ${styles[ev.eventSeverity]}`}>
+                        {ev.eventSeverity}
+                      </span>
                     </td>
-                    <td>{event.eventOutcome}</td>
-                    <td>{event.damageType || '-'}</td>
-                    <td>{event.investigation || '-'}</td>
-                    <td>{event.location}</td>
-                    <td>{event.locationDescription || '-'}</td>
-                    <td>{event.weather || '-'}</td>
-                    <td>{event.coordinates.latitude ? `${event.coordinates.latitude}, ${event.coordinates.longitude}` : '-'}</td>
-                    <td>{formatCasualties(event.casualties)}</td>
-                    <td className={styles.textCell}>
-                      {event.text.length > 50 ? `${event.text.substring(0, 50)}...` : event.text}
+                    <td>{ev.eventOutcomeByCategory}</td>
+                    <td>{ev.location}</td>
+                    <td className={styles.textCell} title={ev.text}>
+                      {ev.text && ev.text.length > 50 ? `${ev.text.substring(0, 50)}...` : ev.text}
+                      {ev.text && ev.text.length > 50 && <InlinePopover text={ev.text} />}
                     </td>
-                    <td className={styles.textCell}>
-                      {event.recommendations ? (event.recommendations.length > 50 ? `${event.recommendations.substring(0, 50)}...` : event.recommendations) : '-'}
-                    </td>
-                    <td>{event.costAmount ? `${event.costAmount} ₪` : '-'}</td>
-                    <td>{new Date(event.createdAt).toLocaleDateString('he-IL')}</td>
+
                     <td>
                       <select
-                        value={event.status}
-                        onChange={(e) => handleStatusChange(event.id, e.target.value)}
+                        value={ev.status}
+                        onChange={(e) => void handleStatusChange(ev.id, e.target.value as AppEvent['status'])}
                         className={styles.statusSelect}
                       >
                         <option value="בטיפול">בטיפול</option>
@@ -329,9 +284,9 @@ export default function EventsPage() {
                       </select>
                     </td>
                     <td>
-                      <button 
+                      <button
                         className={styles.deleteButton}
-                        onClick={() => handleDeleteEvent(event.id)}
+                        onClick={() => void handleDeleteEvent(ev.id)}
                         title="מחק אירוע"
                       >
                         🗑️

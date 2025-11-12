@@ -1,7 +1,7 @@
 import { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form';
-import type { FormData } from '../../utils/validationSchema';
-import styles from '../../styles/FormBase.module.css';
-import { MAX_TEXT_LENGTH } from '../../constants/validationMessages';
+import type { FormData } from '../utils/validationSchema';
+import styles from '../styles/FormBase.module.css';
+import { MAX_TEXT_LENGTH } from '../utils/validationMessages';
 
 interface FourthColumnProps {
   register: UseFormRegister<FormData>;
