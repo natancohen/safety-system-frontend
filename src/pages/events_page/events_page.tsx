@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import styles from './EventsPage.module.css';
+import styles from './events_page.module.css';
 import { getEvents, deleteEvent, updateEventStatus } from '../../utils/api';
 import type { Event as AppEvent } from '../../utils/api';
-import  InlinePopover  from '../../components/InlinePopover';
-import HeaderNav from '@components/headerNav';
+import  InlinePopover  from '../../components/inline_popover';
+import HeaderNav from '@components/header_nav';
 
 interface FilterState {
   eventNumber: string;
@@ -14,9 +14,11 @@ interface FilterState {
   unitName: string;
 }
 
+type ActiveTabType = 'בטיפול' | 'טופל';
+
 export default function EventsPage() {
   const [events, setEvents] = useState<AppEvent[]>([]);
-  const [activeTab, setActiveTab] = useState<string>('בטיפול');
+  const [activeTab, setActiveTab] = useState<ActiveTabType>('בטיפול');
   const [filters, setFilters] = useState<FilterState>({
     eventNumber: '',
     dateFrom: '',

@@ -1,11 +1,11 @@
 import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import type { FormData } from '../utils/validationSchema';
-import styles from '../styles/FormBase.module.css';
-import { MAX_TEXT_LENGTH } from '../utils/validationMessages';
+import type { FormData } from '../utils/validation_schema';
+import styles from '../styles/form_base.module.css';
+import { MAX_TEXT_LENGTH } from '../utils/validation_messages';
 import { locationOptions, weatherOptions } from '../data/options';
-import { handlePinPlacement } from '../components/openMap';
-import  CompactSelect  from '../components/compact-select'; 
+import { handlePinPlacement } from '../components/open_map';
+import  CompactSelect  from '../components/compact_select'; 
 
 interface LeftColumnProps {
   register: UseFormRegister<FormData>;

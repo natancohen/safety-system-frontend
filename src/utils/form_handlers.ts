@@ -1,5 +1,5 @@
 import { UseFormSetValue } from 'react-hook-form';
-import type { FormData } from './validationSchema';
+import type { FormData } from './validation_schema';
 
 export const handleCategoryChange = (
   setValue: UseFormSetValue<FormData>,

@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage/HomePage';
-import FormPage from './pages/FormPage/FormPage';
-import EventsPage from './pages/EventsPage/EventsPage';
+import HomePage from './pages/home_page/home_page';
+import FormPage from './pages/form_page/form_page';
+import EventsPage from './pages/events_page/events_page';
 import './App.css';
-import ThemeToggleButton from './lightMode/ThemeToggleButton';
+import ThemeToggleButton from './light_mode/theme_toggle_button';
 
 
 function App() {

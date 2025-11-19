@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
-import styles from './ThemeToggleButton.module.css';
+import styles from './theme_toggle_button.module.css';
 
 const themes = {
   light: 'light',

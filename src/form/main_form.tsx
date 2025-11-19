@@ -2,8 +2,8 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { FormData } from '../utils/validationSchema';
-import { formSchema } from '../utils/validationSchema';
+import type { FormData } from '../utils/validation_schema';
+import { formSchema } from '../utils/validation_schema';
 import { createEvent } from '../utils/api';
 import type { CreateEventDto } from '../utils/api';
 import {
@@ -18,16 +18,16 @@ import {
   subSubCategoryOptions,
   eventOutcomeOptions,
 } from '../data/options';
-import RightColumn from './RightColumn';
-import MiddleColumn from './MiddleColumn';
-import LeftColumn from './LeftColumn';
-import FourthColumn from './FourthColumn';
-import CasualtiesModal from '../components/CasualtiesModal';
-import  styles from '../styles/FormBase.module.css';
-import responsiveStyles from '../styles/Responsive.module.css';
+import RightColumn from './right_column';
+import MiddleColumn from './middle_column';
+import LeftColumn from './left_column';
+import FourthColumn from './fourth_column';
+import CasualtiesModal from '../components/casualties_modal';
+import  styles from '../styles/form_base.module.css';
+import responsiveStyles from '../styles/responsive.module.css';
 import { eventFactorsOptions } from '../data/options2';
 import { eventResultOptions } from '../data/options3';
-import HeaderNav from '@components/headerNav';
+import HeaderNav from '@components/header_nav';
 
 export default function Form() {
   const navigate = useNavigate();

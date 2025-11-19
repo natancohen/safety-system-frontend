@@ -1,4 +1,4 @@
-@import './FormBase.module.css';
+@import './form_base.module.css';
 
 @media (max-width: 1400px) {
   .formGrid {

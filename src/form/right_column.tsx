@@ -1,12 +1,12 @@
 import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
-import type { FormData } from '../utils/validationSchema';
-import styles from '../styles/FormBase.module.css';
+import type { FormData } from '../utils/validation_schema';
+import styles from '../styles/form_base.module.css';
 import { handleCategoryChange, handleSubCategoryChange, handleSubCategoryOptionsChange,
-   handleSubSubCategoryOptionsChange } from '../utils/formHandlers';
+   handleSubSubCategoryOptionsChange } from '../utils/form_handlers';
 import { categorySubOptions, subSubCategoryOptions } from '../data/options';
 import { useRef } from 'react';
-import { MAX_TEXT_LENGTH } from '../utils/validationMessages';
-import CompactSelect from '../components/compact-select'; 
+import { MAX_TEXT_LENGTH } from '../utils/validation_messages';
+import CompactSelect from '../components/compact_select'; 
 
 interface RightColumnProps {
   register: UseFormRegister<FormData>;
