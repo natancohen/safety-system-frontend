@@ -1,0 +1,31 @@
+.pageContainer {
+  height: 100vh;
+  min-height: 0;
+  padding: 0.5vh 1.5vw ;   
+  box-sizing: border-box;
+  background: var(--background-color);
+  color: var(--text-color);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  direction: rtl;
+  overflow: hidden; 
+}
+
+.formWrapper {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0;
+}
+
+@media (max-width: 1440px) {
+  .pageContainer {
+     height: auto; min-height: 100vh; overflow: visible;
+    }
+  .formWrapper  {
+     height: auto; 
+    }
+}

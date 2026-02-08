@@ -27,7 +27,6 @@
   transform: scale(0.95);
 }
 
-/* Dark mode specific styling */
 body.dark-mode .themeToggleButton {
   background: linear-gradient(135deg, #4a90e2, #357abd);
   box-shadow: 0 4px 20px rgba(74, 144, 226, 0.3);
